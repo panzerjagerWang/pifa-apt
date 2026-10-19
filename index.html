@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PIFA: Forgery-Resistant APT Attribution</title>
+<meta name="description" content="PIFA: adversarially trained, forgery-resistant attribution of virtualization-obfuscated APT malware from PE-header fields.">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f6f7f8; --ink:#1b2a32; --muted:#5b6b73; --line:#e3e7e9;
+    --teal:#20867f; --gold:#a67125; --blue:#397ba5; --hero:#fbe3ce;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1517; --panel:#161d20; --ink:#e7edef; --muted:#9fb0b6; --line:#232c30;
+      --teal:#5bb6ad; --gold:#d6a860; --blue:#6fb0d6; --hero:#2a2016;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1517; --panel:#161d20; --ink:#e7edef; --muted:#9fb0b6; --line:#232c30;
+    --teal:#5bb6ad; --gold:#d6a860; --blue:#6fb0d6; --hero:#2a2016;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:860px;margin:0 auto;padding:0 16px}
+  header{padding:54px 16px 30px;text-align:center}
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:700;line-height:1.22;
+    font-size:clamp(1.5rem,4.2vw,2.35rem);margin:0 auto;max-width:17em;letter-spacing:-.01em}
+  .venue{color:var(--teal);font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    font-size:.8rem;margin:0 0 14px}
+  .authors{margin:18px auto 2px;max-width:40em;font-size:1.05rem}
+  .authors a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+  .affil,.note{color:var(--muted);font-size:.9rem;margin:6px auto;max-width:44em}
+  .links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:26px 0 4px}
+  .links a{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;
+    background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600;font-size:.92rem;
+    border:1px solid var(--ink);transition:transform .08s ease}
+  .links a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .links a:hover{transform:translateY(-1px)}
+  main{padding:8px 0 40px}
+  section{margin:38px 0}
+  h2{font-family:Georgia,"Times New Roman",serif;font-size:1.3rem;margin:0 0 .5em;
+    padding-bottom:.3em;border-bottom:1px solid var(--line)}
+  p{margin:.7em 0}
+  .abstract{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+  .abstract p{margin:.4em 0;text-align:justify}
+  figure{margin:0;text-align:center}
+  figure img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px}
+  figcaption{color:var(--muted);font-size:.88rem;margin-top:10px;text-align:left}
+  .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:460px}
+  th,td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{background:var(--panel);font-weight:600}
+  tbody tr.hero{background:var(--hero)}
+  tbody tr.hero td{font-weight:700;color:var(--ink)}
+  .bad{color:#b23a3a;font-weight:600}
+  .cap{color:var(--muted);font-size:.86rem;margin-top:8px}
+  .points li{margin:.45em 0}
+  pre{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+    overflow-x:auto;font-size:.84rem;line-height:1.5}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;padding:26px 16px 50px;text-align:center}
+  .toggle{position:fixed;top:12px;right:12px;background:var(--panel);border:1px solid var(--line);
+    color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.8rem}
+</style>
+</head>
+<body>
+<button class="toggle" id="themeToggle" aria-label="Toggle colour theme">◑ theme</button>
+<header>
+  <div class="wrap">
+    <p class="venue">Submitted to IEEE TDSC</p>
+    <h1>PIFA: Adversarially Trained, Forgery-Resistant Attribution of Virtualization-Obfuscated APT Malware</h1>
+    <p class="authors">
+      Xubo&nbsp;Fang<sup>&#42;&dagger;</sup>, Haochen&nbsp;Dong<sup>&dagger;</sup>, Lei&nbsp;Zhong<sup>&dagger;</sup>,
+      Jiaqing&nbsp;Wang<sup>&#42;</sup>, Sicheng&nbsp;Han
+    </p>
+    <p class="affil">Kanazawa University &middot; Shanghai Jiao Tong University &middot; Hanyang University</p>
+    <p class="note"><sup>&dagger;</sup>Equal contribution.&nbsp; <sup>&#42;</sup>Corresponding authors.</p>
+    <nav class="links">
+      <a href="pifa_paper.pdf">&#128196; Paper (PDF)</a>
+      <a class="ghost" href="https://github.com/panzerjagerWang/pifa-apt">&#60;/&#62; Code</a>
+      <a class="ghost" href="https://github.com/panzerjagerWang/pifa-apt">&#128190; Data</a>
+    </nav>
+    <p class="note">Code and the derived datasets will be released here upon publication.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>Abstract</h2>
+    <div class="abstract">
+      <p>Attributing malware to the advanced persistent threat (APT) group that produced it must stay reliable
+      after commercial obfuscation has rewritten the code, and against an adversary who forges a file's metadata to
+      evade or misdirect attribution. However, static attributors of virtualization-obfuscated malware have been
+      evaluated on splits that leak executables or builds between training and testing, and they read header or byte
+      features that an adversary can rewrite, so no method attributes protected malware robustly.</p>
+      <p>We propose <strong>PIFA</strong> (Perturbation-Invariant, Forgery-resistant Attribution), a gradient-boosted
+      attributor that reads every PE-header field but is trained on forged, copied, and edited copies of each
+      executable, so it uses a field only where it agrees with the non-forgeable loader-relevant structure. We further
+      develop <strong>ObfusFormer</strong>, a multi-view Transformer trained on each executable paired with its
+      protected version, and study both on a leakage-free, build-grouped, adversary-aware benchmark of nine APT groups
+      rebuilt from our earlier work. On unseen builds, PIFA attributed VMProtect-protected executables with a
+      macro-<em>F</em><sub>1</sub> of <strong>91.2%</strong>, and stayed at <strong>91.1%</strong>,
+      <strong>90.9%</strong>, and <strong>91.0%</strong> under forgery, false-flag, and editing attacks &mdash; the most
+      accurate attribution that survives every attack.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Approach</h2>
+    <figure>
+      <img src="fig1.png" alt="PIFA concept figure: executable to PE header to attribution">
+      <figcaption><strong>Task and recommended attributor.</strong> PIFA reads the full PE header of a
+      VMProtect-protected executable but is trained on forged, copied, and edited copies, so it attributes the APT
+      family accurately (91.2%) and stays robust when the header is attacked, above the multi-view Transformer
+      (ObfusFormer) and the image and byte networks on the raw bytes. Clean-trained all-header trees score higher on
+      untouched samples (92.5%) but collapse under a false flag.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>The robustness result</h2>
+    <p>The descriptive header fields (time stamp, section names, Rich header, &hellip;) carry a real family signal, but
+    an adversary can forge them or copy them from another group. Reading only the loader-relevant fields resists that
+    but discards the signal and still breaks under field edits. PIFA reads everything and learns, through adversarial
+    training, to trust a field only when it is consistent with the structure an adversary cannot change &mdash; the
+    only method robust to all three attacks.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Attributor (macro-<em>F</em><sub>1</sub>, %)</th><th>Clean</th><th>Forged</th><th>False&#8209;flag</th><th>Edited</th></tr></thead>
+        <tbody>
+          <tr class="hero"><td>PIFA (ours)</td><td>91.2</td><td>91.1</td><td>90.9</td><td>91.0</td></tr>
+          <tr><td>Trees, all header fields</td><td>92.5</td><td class="bad">48.3</td><td class="bad">50.2</td><td>91.8</td></tr>
+          <tr><td>Trees, loader-relevant fields</td><td>90.9</td><td>90.9</td><td>90.9</td><td class="bad">85.3</td></tr>
+          <tr><td>ObfusFormer (ours, deep)</td><td>87.5</td><td>87.5</td><td>87.5</td><td class="bad">68.3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">Header manipulations of VMProtect-protected test executables, Joint protocol, build-grouped folds
+    (seed&nbsp;0). A false flag copies another group's descriptive fields; PIFA sends only 1.6% of such samples to the
+    donor group, versus 29.7% for the all-header trees.</p>
+  </section>
+
+  <section>
+    <h2>Highlights</h2>
+    <ul class="points">
+      <li><strong>A method, not just a finding.</strong> Adversarial header training reconciles the accuracy of the
+      full PE header with robustness to forgery, false-flag, and editing attacks &mdash; at no inference cost.</li>
+      <li><strong>Simple and fast.</strong> Gradient-boosted trees over parsed header fields; seconds per fold on a
+      laptop CPU, above a multi-view Transformer and eight image/byte networks.</li>
+      <li><strong>An honest benchmark.</strong> A leakage-free, build-grouped, forgery-aware evaluation of nine APT
+      groups, rebuilt from the VM-obfuscated corpus of our earlier work; attribution of later builds is tested too.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Citation</h2>
+    <pre><code>@article{fang2026pifa,
+  title   = {PIFA: Adversarially Trained, Forgery-Resistant Attribution
+             of Virtualization-Obfuscated APT Malware},
+  author  = {Fang, Xubo and Dong, Haochen and Zhong, Lei
+             and Wang, Jiaqing and Han, Sicheng},
+  journal = {IEEE Transactions on Dependable and Secure Computing (under review)},
+  year    = {2026}
+}</code></pre>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Project page for the PIFA manuscript. Content reflects the submitted version and may change.</div>
+</footer>
+
+<script>
+  (function(){
+    var t=document.getElementById('themeToggle');
+    try{var s=localStorage.getItem('pifa-theme'); if(s) document.documentElement.setAttribute('data-theme',s);}catch(e){}
+    t.addEventListener('click',function(){
+      var cur=document.documentElement.getAttribute('data-theme');
+      var mql=window.matchMedia('(prefers-color-scheme: dark)');
+      var next=(cur? cur==='dark':mql.matches)?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      try{localStorage.setItem('pifa-theme',next);}catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>
