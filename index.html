@@ -76,7 +76,7 @@
       Xubo&nbsp;Fang<sup>&#42;&dagger;</sup>, Haochen&nbsp;Dong<sup>&dagger;</sup>, Lei&nbsp;Zhong<sup>&dagger;</sup>,
       Jiaqing&nbsp;Wang<sup>&#42;</sup>, Sicheng&nbsp;Han
     </p>
-    <p class="affil">Kanazawa University &middot; Shanghai Jiao Tong University &middot; Hanyang University</p>
+    <p class="affil">Kanazawa University &middot; Shanghai Jiao Tong University &middot; Hohai University &middot; Hanyang University</p>
     <p class="note"><sup>&dagger;</sup>Equal contribution.&nbsp; <sup>&#42;</sup>Corresponding authors.</p>
     <nav class="links">
       <a href="pifa_paper.pdf">&#128196; Paper (PDF)</a>
@@ -103,7 +103,7 @@
       protected version, and study both on a leakage-free, build-grouped, adversary-aware benchmark of nine APT groups
       rebuilt from our earlier work. On unseen builds, PIFA attributed VMProtect-protected executables with a
       macro-<em>F</em><sub>1</sub> of <strong>91.2%</strong>, and stayed at <strong>91.1%</strong>,
-      <strong>90.9%</strong>, and <strong>91.0%</strong> under forgery, false-flag, and editing attacks &mdash; the most
+      <strong>90.9%</strong>, and <strong>91.0%</strong> under forgery, false-flag, and editing attacks, the most
       accurate attribution that survives every attack.</p>
     </div>
   </section>
@@ -125,7 +125,7 @@
     <p>The descriptive header fields (time stamp, section names, Rich header, &hellip;) carry a real family signal, but
     an adversary can forge them or copy them from another group. Reading only the loader-relevant fields resists that
     but discards the signal and still breaks under field edits. PIFA reads everything and learns, through adversarial
-    training, to trust a field only when it is consistent with the structure an adversary cannot change &mdash; the
+    training, to trust a field only when it is consistent with the structure an adversary cannot change, the
     only method robust to all three attacks.</p>
     <div class="tbl">
       <table>
@@ -147,7 +147,7 @@
     <h2>Highlights</h2>
     <ul class="points">
       <li><strong>A method, not just a finding.</strong> Adversarial header training reconciles the accuracy of the
-      full PE header with robustness to forgery, false-flag, and editing attacks &mdash; at no inference cost.</li>
+      full PE header with robustness to forgery, false-flag, and editing attacks, at no inference cost.</li>
       <li><strong>Simple and fast.</strong> Gradient-boosted trees over parsed header fields; seconds per fold on a
       laptop CPU, above a multi-view Transformer and eight image/byte networks.</li>
       <li><strong>An honest benchmark.</strong> A leakage-free, build-grouped, forgery-aware evaluation of nine APT
