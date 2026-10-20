@@ -94,68 +94,68 @@
   <section>
     <h2>Abstract</h2>
     <div class="abstract">
-      <p>Attributing malware to the advanced persistent threat (APT) group that produced it must stay reliable
-      after commercial obfuscation has rewritten the code, and against an adversary who forges a file's metadata to
-      evade or misdirect attribution. However, static attributors of virtualization-obfuscated malware have been
-      evaluated on splits that leak executables or builds between training and testing, and they read header or byte
-      features that an adversary can rewrite, so no method attributes protected malware robustly.</p>
-      <p>We propose <strong>PIFA</strong> (Perturbation-Invariant, Forgery-resistant Attribution), a gradient-boosted
-      attributor that reads every PE-header field but is trained on forged, copied, and edited copies of each
-      executable, so it uses a field only where it agrees with the non-forgeable loader-relevant structure. We further
-      develop <strong>ObfusFormer</strong>, a multi-view Transformer trained on each executable paired with its
-      protected version, and study both on a leakage-free, build-grouped, adversary-aware benchmark of nine APT groups
-      rebuilt from our earlier work. On unseen builds, PIFA attributed VMProtect-protected executables with a
-      macro-<em>F</em><sub>1</sub> of <strong>91.2%</strong>, and stayed at <strong>91.1%</strong>,
-      <strong>90.9%</strong>, and <strong>91.0%</strong> under forgery, false-flag, and editing attacks, the most
-      accurate attribution that survives every attack.</p>
+      <p>Attributing malware to the advanced persistent threat group that produced it guides the response to an
+      intrusion. This attribution must stay reliable after commercial virtualization obfuscation has rewritten the code
+      of a file. It must also resist an adversary who forges the metadata of the file. However, existing static
+      attributors read byte or header features that such an adversary can rewrite. Their evaluations also shared
+      executables or builds between training and testing.</p>
+      <p>Therefore, we propose the Perturbation-Invariant Forgery-Resistant Attribution (<strong>PIFA</strong>) model,
+      which reads every field of the portable executable header with gradient-boosted trees. The model trains these
+      trees on forged, false-flag, and edited copies of each executable, all labeled with the true group. A split on a
+      manipulated field then separates samples of the same group, which drives the trees to use such a field only where
+      it agrees with the unchanged fields. We also develop <strong>ObfusFormer</strong>, a multi-view Transformer that
+      learns from each executable paired with its protected version. On unseen builds of nine groups, PIFA attributed
+      VMProtect-protected executables with a macro-averaged <em>F</em><sub>1</sub> score of <strong>91.2%</strong>.
+      Its score stayed at <strong>90.9%</strong> or higher under forged, false-flag, and edited headers. Without the
+      copies, the score of the trees fell from 92.5% to 48.3% under forgery.</p>
     </div>
   </section>
 
   <section>
-    <h2>Approach</h2>
+    <h2>Concept</h2>
     <figure>
-      <img src="fig1.png" alt="PIFA concept figure: executable to PE header to attribution">
-      <figcaption><strong>Task and recommended attributor.</strong> PIFA reads the full PE header of a
-      VMProtect-protected executable but is trained on forged, copied, and edited copies, so it attributes the APT
-      family accurately (91.2%) and stays robust when the header is attacked, above the multi-view Transformer
-      (ObfusFormer) and the image and byte networks on the raw bytes. Clean-trained all-header trees score higher on
-      untouched samples (92.5%) but collapse under a false flag.</figcaption>
+      <img src="fig1.png" alt="Concept of PIFA: header fields of a protected executable, adversarial copies, gradient-boosted trees, and the APT group">
+      <figcaption><strong>Concept of PIFA.</strong> PIFA reads the loader-relevant and descriptive fields of the PE
+      header of a protected executable and trains gradient-boosted trees on adversarial copies with forged, false-flag,
+      and edited fields, all labeled with the true APT group. Light bars give the macro-<em>F</em><sub>1</sub> on the
+      original protected test executables of the folds grouped by build, and dark bars the worst case over the three
+      manipulations.</figcaption>
     </figure>
   </section>
 
   <section>
-    <h2>The robustness result</h2>
-    <p>The descriptive header fields (time stamp, section names, Rich header, &hellip;) carry a real family signal, but
-    an adversary can forge them or copy them from another group. Reading only the loader-relevant fields resists that
-    but discards the signal and still breaks under field edits. PIFA reads everything and learns, through adversarial
-    training, to trust a field only when it is consistent with the structure an adversary cannot change, the
-    only method robust to all three attacks.</p>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>Attributor (macro-<em>F</em><sub>1</sub>, %)</th><th>Clean</th><th>Forged</th><th>False&#8209;flag</th><th>Edited</th></tr></thead>
-        <tbody>
-          <tr class="hero"><td>PIFA (ours)</td><td>91.2</td><td>91.1</td><td>90.9</td><td>91.0</td></tr>
-          <tr><td>Trees, all header fields</td><td>92.5</td><td class="bad">48.3</td><td class="bad">50.2</td><td>91.8</td></tr>
-          <tr><td>Trees, loader-relevant fields</td><td>90.9</td><td>90.9</td><td>90.9</td><td class="bad">85.3</td></tr>
-          <tr><td>ObfusFormer (ours, deep)</td><td>87.5</td><td>87.5</td><td>87.5</td><td class="bad">68.3</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="cap">Header manipulations of VMProtect-protected test executables, Joint protocol, build-grouped folds
-    (seed&nbsp;0). A false flag copies another group's descriptive fields; PIFA sends only 1.6% of such samples to the
-    donor group, versus 29.7% for the all-header trees.</p>
+    <h2>Method</h2>
+    <figure>
+      <img src="fig3.png" alt="Training and attribution with PIFA">
+      <figcaption><strong>Training and attribution with PIFA.</strong> During training, PIFA adds two forged copies,
+      one false-flag copy, and one edited copy of every training executable, all with the true group. At test time,
+      the same trees read the header fields of a test executable, which an adversary may have forged, copied from
+      another group, or edited.</figcaption>
+    </figure>
   </section>
 
   <section>
-    <h2>Highlights</h2>
-    <ul class="points">
-      <li><strong>A method, not just a finding.</strong> Adversarial header training reconciles the accuracy of the
-      full PE header with robustness to forgery, false-flag, and editing attacks, at no inference cost.</li>
-      <li><strong>Simple and fast.</strong> Gradient-boosted trees over parsed header fields; seconds per fold on a
-      laptop CPU, above a multi-view Transformer and eight image/byte networks.</li>
-      <li><strong>An honest benchmark.</strong> A leakage-free, build-grouped, forgery-aware evaluation of nine APT
-      groups, rebuilt from the VM-obfuscated corpus of our earlier work; attribution of later builds is tested too.</li>
-    </ul>
+    <h2>Robustness to header manipulation</h2>
+    <figure>
+      <img src="fig7.png" alt="Macro-F1 under header manipulation">
+    </figure>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Method (macro-<em>F</em><sub>1</sub>, %)</th><th>Original</th><th>Forged</th><th>Edited</th><th>False&#8209;flag</th><th>Donor</th></tr></thead>
+        <tbody>
+          <tr class="hero"><td>PIFA</td><td>91.2</td><td>91.1</td><td>91.0</td><td>90.9</td><td>1.6</td></tr>
+          <tr><td>Trees, all header fields</td><td>92.5</td><td class="bad">48.3</td><td>91.8</td><td class="bad">50.6</td><td class="bad">29.3</td></tr>
+          <tr><td>Trees, loader-relevant fields</td><td>90.9</td><td>90.9</td><td class="bad">85.3</td><td>90.9</td><td>1.2</td></tr>
+          <tr><td>Trees, loader-relevant fields, edited copies</td><td>90.6</td><td>90.6</td><td>90.3</td><td>90.6</td><td>1.7</td></tr>
+          <tr><td>Trees, descriptive fields</td><td>88.5</td><td class="bad">9.0</td><td>88.5</td><td class="bad">0.0</td><td class="bad">100.0</td></tr>
+          <tr><td>ObfusFormer</td><td>87.5</td><td>87.5</td><td class="bad">68.3</td><td>87.5</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">VMProtect-protected test executables, Joint protocol, folds grouped by build, seed 0, means over five
+    folds. All methods are scored on the same forged, edited, and false-flag samples. The donor column gives the share
+    of false-flagged samples attributed to the group of the donor executable. PIFA had the highest worst case,
+    90.9%. The loader-relevant trees trained with edited copies came closest with 90.3%.</p>
   </section>
 
   <section>
